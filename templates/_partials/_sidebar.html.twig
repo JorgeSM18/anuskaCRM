@@ -1,0 +1,62 @@
+{% set route = app.request.attributes.get('_route') %}
+<aside class="sidebar">
+    <div class="sidebar__brand">
+        <span>🧵</span>
+        <span>ANUSKA<small>Complementos</small></span>
+    </div>
+
+    <nav class="sidebar__nav">
+        <a class="nav-link {{ route == 'dashboard' ? 'is-active' }}" href="{{ path('dashboard') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+            Panel
+        </a>
+
+        <a class="nav-link {{ route starts with 'supplier_' or route starts with 'contact_' ? 'is-active' }}" href="{{ path('supplier_index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7h18M3 12h18M3 17h18"/></svg>
+            Proveedores
+        </a>
+
+        {# Secciones que se activan en fases posteriores del MVP #}
+        <a class="nav-link {{ route starts with 'purchase_order' ? 'is-active' }}" href="{{ path('purchase_order_index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v15H6z"/><path d="M14 2v6h6"/></svg>
+            Pedidos
+        </a>
+        <a class="nav-link {{ route starts with 'invoice_' ? 'is-active' }}" href="{{ path('invoice_index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+            Facturas
+        </a>
+        <a class="nav-link {{ route starts with 'appointment_' ? 'is-active' }}" href="{{ path('appointment_index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M3 10h18M8 2v4M16 2v4"/></svg>
+            Citas
+        </a>
+        <a class="nav-link {{ route starts with 'communication_' ? 'is-active' }}" href="{{ path('communication_index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Comunicaciones
+        </a>
+        <a class="nav-link {{ route starts with 'fair_' ? 'is-active' }}" href="{{ path('fair_index') }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4M9 9v.01M9 12v.01M9 15v.01"/></svg>
+            Ferias
+        </a>
+
+        {% if is_granted('ROLE_ADMIN') %}
+            <a class="nav-link {{ route starts with 'admin_user' ? 'is-active' }}" href="{{ path('admin_user_index') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                Usuarios
+            </a>
+            <a class="nav-link {{ route starts with 'category_' ? 'is-active' }}" href="{{ path('category_index') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                Configuración
+            </a>
+        {% endif %}
+    </nav>
+
+    <div class="sidebar__footer">
+        <div class="sidebar__user">
+            <span class="avatar">{{ app.user.fullName|slice(0, 1)|upper }}</span>
+            <span class="meta">
+                <strong>{{ app.user.fullName }}</strong>
+                <span>{{ is_granted('ROLE_ADMIN') ? 'Administrador' : 'Usuario' }}</span>
+            </span>
+        </div>
+    </div>
+</aside>

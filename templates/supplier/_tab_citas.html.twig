@@ -1,0 +1,19 @@
+{# Pestaña "Citas" de la ficha. Recibe `supplier`. #}
+<div class="card">
+    <div class="card__body">
+        <div style="display:flex;align-items:center;margin-bottom:8px">
+            <h3 style="margin:0">Citas</h3>
+            <a class="btn btn--primary" style="margin-left:auto" href="{{ path('appointment_new_for_supplier', {id: supplier.id}) }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nueva cita
+            </a>
+        </div>
+        {% if supplier.appointments is empty %}
+            <div class="empty-hint">Sin citas registradas todavía.</div>
+        {% else %}
+            {% for appointment in supplier.appointments %}
+                {{ include('_partials/_appointment_item.html.twig') }}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

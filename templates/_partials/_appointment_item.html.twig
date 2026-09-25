@@ -1,0 +1,31 @@
+{# Item de cita. Recibe `appointment` y opcional `show_supplier` (bool). #}
+<div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)">
+    <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+            <strong>{{ appointment.title }}</strong>
+            <span class="badge badge--{{ appointment.status.badge }}">{{ appointment.status.label }}</span>
+        </div>
+        <div class="text-muted" style="font-size:13px;margin-top:2px">
+            {{ appointment.type.label }}
+            {% if appointment.startsAt %} · {{ appointment.startsAt|date('d/m/Y H:i') }}{% endif %}
+            {% if appointment.durationMinutes %} · {{ appointment.durationMinutes }} min{% endif %}
+            {% if show_supplier|default(false) and appointment.supplier %} · <a href="{{ path('supplier_show', {id: appointment.supplier.id}) }}">{{ appointment.supplier.brandName }}</a>{% endif %}
+            {% if appointment.contact %} · {{ appointment.contact.fullName }}{% endif %}
+            {% if appointment.location %} · 📍 {{ appointment.location }}{% endif %}
+        </div>
+        {% if appointment.notes %}<p style="margin:6px 0 0;white-space:pre-line">{{ appointment.notes }}</p>{% endif %}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;white-space:nowrap">
+        <a href="{{ path('appointment_edit', {id: appointment.id}) }}" style="font-size:13px">Editar</a>
+        {% if appointment.status.value == 'pending' %}
+            <form method="post" action="{{ path('appointment_set_status', {id: appointment.id, status: 'done'}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('status' ~ appointment.id) }}">
+                <button type="submit" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:13px;padding:0">Realizada</button>
+            </form>
+            <form method="post" action="{{ path('appointment_set_status', {id: appointment.id, status: 'cancelled'}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('status' ~ appointment.id) }}">
+                <button type="submit" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:0">Cancelar</button>
+            </form>
+        {% endif %}
+    </div>
+</div>

@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nuevo proveedor' : 'Editar ' ~ supplier.brandName }} · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nuevo proveedor' : 'Editar proveedor' }}</h1>
+    </div>
+
+    <div class="card" style="max-width:640px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-grid">
+                    <div class="form-row form-row--full">
+                        {{ form_label(form.brandName) }}{{ form_widget(form.brandName) }}{{ form_errors(form.brandName) }}
+                    </div>
+                    <div class="form-row">{{ form_label(form.legalName) }}{{ form_widget(form.legalName) }}{{ form_errors(form.legalName) }}</div>
+                    <div class="form-row">{{ form_label(form.taxId) }}{{ form_widget(form.taxId) }}{{ form_errors(form.taxId) }}</div>
+                    <div class="form-row">{{ form_label(form.phone) }}{{ form_widget(form.phone) }}{{ form_errors(form.phone) }}</div>
+                    <div class="form-row">{{ form_label(form.email) }}{{ form_widget(form.email) }}{{ form_errors(form.email) }}</div>
+                    <div class="form-row">{{ form_label(form.website) }}{{ form_widget(form.website) }}{{ form_errors(form.website) }}</div>
+                    <div class="form-row">{{ form_label(form.status) }}{{ form_widget(form.status) }}{{ form_errors(form.status) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.address) }}{{ form_widget(form.address) }}{{ form_errors(form.address) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.notes) }}{{ form_widget(form.notes) }}{{ form_errors(form.notes) }}</div>
+                    <div class="form-row form-row--full">
+                        {{ form_label(form.categories) }}
+                        {% if form.categories|length > 0 %}
+                            <div class="checkbox-group">{{ form_widget(form.categories) }}</div>
+                        {% else %}
+                            <p class="form-help">No hay categorías todavía. Un administrador puede crearlas en Configuración → Categorías.</p>
+                        {% endif %}
+                        {{ form_errors(form.categories) }}
+                    </div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ is_new ? path('supplier_index') : path('supplier_show', {id: supplier.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

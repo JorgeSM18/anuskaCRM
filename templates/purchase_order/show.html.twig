@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pedido {{ order.number }} · {{ order.supplier.brandName }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <h1>Pedido {{ order.number }}</h1>
+                <span class="badge badge--{{ order.status.badge }}">{{ order.status.label }}</span>
+            </div>
+            <div class="text-muted" style="margin-top:4px">
+                <a href="{{ path('supplier_show', {id: order.supplier.id}) }}">{{ order.supplier.brandName }}</a>
+            </div>
+        </div>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('supplier_tab', {id: order.supplier.id, tab: 'pedidos'}) }}">Volver</a>
+            <a class="btn btn--primary" href="{{ path('purchase_order_edit', {id: order.id}) }}">Editar</a>
+        </div>
+    </div>
+
+    <div class="card" style="max-width:680px">
+        <div class="card__body">
+            <dl style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0">
+                <dt class="text-muted">Fecha del pedido</dt><dd style="margin:0">{{ order.orderedAt ? order.orderedAt|date('d/m/Y') : '—' }}</dd>
+                <dt class="text-muted">Temporada</dt><dd style="margin:0">{{ order.season ?: '—' }}</dd>
+                <dt class="text-muted">Campaña</dt><dd style="margin:0">{{ order.campaign ?: '—' }}</dd>
+                <dt class="text-muted">Comercial</dt><dd style="margin:0">{{ order.contact ? order.contact.fullName : '—' }}</dd>
+                <dt class="text-muted">Importe estimado</dt><dd style="margin:0">{{ order.estimatedAmount|money }}</dd>
+                <dt class="text-muted">Importe final</dt><dd style="margin:0">{{ order.finalAmount|money }}</dd>
+                <dt class="text-muted">Entrega prevista</dt><dd style="margin:0">{{ order.expectedDeliveryAt ? order.expectedDeliveryAt|date('d/m/Y') : '—' }}</dd>
+                <dt class="text-muted">Recepción real</dt><dd style="margin:0">{{ order.receivedAt ? order.receivedAt|date('d/m/Y') : '—' }}</dd>
+            </dl>
+            {% if order.content %}
+                <h3 style="margin:18px 0 8px">Qué se pidió</h3>
+                <p style="margin:0;white-space:pre-line">{{ order.content }}</p>
+            {% endif %}
+            {% if order.notes %}
+                <h3 style="margin:18px 0 8px">Notas</h3>
+                <p style="margin:0;white-space:pre-line">{{ order.notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="max-width:680px;margin-top:18px">
+        {{ include('_partials/_documents_section.html.twig', {owner_type: 'order', owner_id: order.id, documents: order.documents}) }}
+    </div>
+
+    <p class="text-muted" style="font-size:12px;margin-top:18px">
+        {% if order.createdAt %}Creado {{ order.createdBy ? 'por ' ~ order.createdBy.fullName : '' }} el {{ order.createdAt|date('d/m/Y H:i') }}.{% endif %}
+        {% if order.updatedAt %} Última modificación el {{ order.updatedAt|date('d/m/Y H:i') }}.{% endif %}
+    </p>
+{% endblock %}

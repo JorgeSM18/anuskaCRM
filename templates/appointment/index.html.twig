@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Citas · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Citas</h1>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('appointment_index', {view: 'calendar'}) }}">Calendario</a>
+            <a class="btn btn--primary" href="{{ path('appointment_new') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nueva cita
+            </a>
+        </div>
+    </div>
+
+    <form method="get" action="{{ path('appointment_index') }}" data-controller="autosubmit" style="margin-bottom:16px">
+        <select name="status" data-action="autosubmit#submit" class="filter-select">
+            <option value="">Todos los estados</option>
+            {% for case in enum('App\\Enum\\AppointmentStatus').cases() %}
+                <option value="{{ case.value }}" {{ status == case ? 'selected' }}>{{ case.label() }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div class="card">
+        <div class="card__body">
+            {% if total == 0 %}
+                <div class="empty-hint">No hay citas que coincidan.</div>
+            {% else %}
+                {% for appointment in appointments %}
+                    {{ include('_partials/_appointment_item.html.twig', {show_supplier: true}) }}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if pages > 1 %}
+        <div style="display:flex;gap:6px;justify-content:center;margin-top:18px">
+            {% for p in 1..pages %}
+                {% set params = {page: p} %}
+                {% if status %}{% set params = params|merge({status: status.value}) %}{% endif %}
+                <a class="btn {{ p == page ? 'btn--primary' : 'btn--ghost' }}" href="{{ path('appointment_index', params) }}">{{ p }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

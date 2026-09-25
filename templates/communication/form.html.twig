@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nueva comunicación' : 'Editar comunicación' }} · {{ supplier.brandName }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nueva comunicación' : 'Editar comunicación' }}</h1>
+        <div class="text-muted" style="margin-left:12px;align-self:center">{{ supplier.brandName }}</div>
+    </div>
+
+    <div class="card" style="max-width:600px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-grid">
+                    <div class="form-row">{{ form_label(form.type) }}{{ form_widget(form.type) }}{{ form_errors(form.type) }}</div>
+                    <div class="form-row">{{ form_label(form.occurredAt) }}{{ form_widget(form.occurredAt) }}{{ form_errors(form.occurredAt) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.subject) }}{{ form_widget(form.subject) }}{{ form_errors(form.subject) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.contact) }}{{ form_widget(form.contact) }}{{ form_errors(form.contact) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.body) }}{{ form_widget(form.body) }}{{ form_errors(form.body) }}</div>
+                </div>
+                <div class="checkbox-row">{{ form_widget(form.isImportant) }}{{ form_label(form.isImportant) }}</div>
+                <div class="checkbox-row">{{ form_widget(form.pendingReply) }}{{ form_label(form.pendingReply) }}</div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ path('supplier_tab', {id: supplier.id, tab: 'comunicaciones'}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

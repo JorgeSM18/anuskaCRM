@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ supplier.brandName }} · Anuska Complementos{% endblock %}
+
+{% set tabs = {
+    'resumen': {'label': 'Resumen', 'route': path('supplier_show', {id: supplier.id})},
+    'pedidos': {'label': 'Pedidos', 'route': path('supplier_tab', {id: supplier.id, tab: 'pedidos'})},
+    'facturas': {'label': 'Facturas', 'route': path('supplier_tab', {id: supplier.id, tab: 'facturas'})},
+    'comunicaciones': {'label': 'Comunicaciones', 'route': path('supplier_tab', {id: supplier.id, tab: 'comunicaciones'})},
+    'citas': {'label': 'Citas', 'route': path('supplier_tab', {id: supplier.id, tab: 'citas'})},
+    'documentos': {'label': 'Documentos', 'route': path('supplier_tab', {id: supplier.id, tab: 'documentos'})},
+} %}
+
+{% block body %}
+    {# ---------- Cabecera ---------- #}
+    <div class="page-head">
+        <div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <h1>{{ supplier.brandName }}</h1>
+                <span class="badge badge--{{ supplier.status.badge }}">{{ supplier.status.label }}</span>
+            </div>
+            <div class="text-muted" style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
+                {% if supplier.primaryContact %}<span>👤 {{ supplier.primaryContact.fullName }}</span>{% endif %}
+                {% if supplier.phone %}<span>📞 <a href="tel:{{ supplier.phone }}">{{ supplier.phone }}</a></span>{% endif %}
+                {% if supplier.email %}<span>✉️ <a href="mailto:{{ supplier.email }}">{{ supplier.email }}</a></span>{% endif %}
+                {% if supplier.website %}<span>🌐 <a href="{{ supplier.website }}" target="_blank" rel="noopener">Web</a></span>{% endif %}
+            </div>
+        </div>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('supplier_edit', {id: supplier.id}) }}">Editar</a>
+            <form method="post" action="{{ path('supplier_toggle_status', {id: supplier.id}) }}" style="display:inline"
+                  data-controller="confirm" data-confirm-message-value="{{ supplier.active ? '¿Desactivar este proveedor?' : '¿Activar este proveedor?' }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ supplier.id) }}">
+                <button class="btn {{ supplier.active ? 'btn--danger' : 'btn--ghost' }}" type="submit">{{ supplier.active ? 'Desactivar' : 'Activar' }}</button>
+            </form>
+        </div>
+    </div>
+
+    {# ---------- Tarjetas de resumen ---------- #}
+    <div class="stat-strip">
+        {{ include('_partials/_stat_card.html.twig', {label: 'Contactos', value: supplier.contacts|length}) }}
+        {{ include('_partials/_stat_card.html.twig', {label: 'Comercial principal', value: supplier.primaryContact ? supplier.primaryContact.fullName : '—', muted: not supplier.primaryContact}) }}
+        {{ include('_partials/_stat_card.html.twig', {label: 'Pedidos', value: stats.ordersCount}) }}
+        {{ include('_partials/_stat_card.html.twig', {label: 'Facturado', value: stats.invoicedTotal|money, sub: 'Pendiente: ' ~ (stats.pendingTotal|money)}) }}
+        {{ include('_partials/_stat_card.html.twig', {label: 'Último contacto', value: stats.lastContactAt ? stats.lastContactAt|date('d/m/Y') : '—', muted: not stats.lastContactAt}) }}
+        {{ include('_partials/_stat_card.html.twig', {
+            label: 'Próxima cita',
+            value: stats.nextAppointment ? stats.nextAppointment.startsAt|date('d/m/Y H:i') : '—',
+            muted: not stats.nextAppointment,
+            sub: stats.nextAppointment ? stats.nextAppointment.title : null,
+        }) }}
+    </div>
+
+    {# ---------- Pestañas ---------- #}
+    <nav class="tabs">
+        {% for key, t in tabs %}
+            <a class="tab {{ tab == key ? 'is-active' }}" href="{{ t.route }}">{{ t.label }}</a>
+        {% endfor %}
+    </nav>
+
+    {# ---------- Contenido de la pestaña ---------- #}
+    {% if tab == 'resumen' %}
+        {{ include('supplier/_tab_resumen.html.twig') }}
+    {% elseif tab == 'pedidos' %}
+        {{ include('supplier/_tab_pedidos.html.twig') }}
+    {% elseif tab == 'facturas' %}
+        {{ include('supplier/_tab_facturas.html.twig') }}
+    {% elseif tab == 'comunicaciones' %}
+        {{ include('supplier/_tab_comunicaciones.html.twig') }}
+    {% elseif tab == 'citas' %}
+        {{ include('supplier/_tab_citas.html.twig') }}
+    {% elseif tab == 'documentos' %}
+        {{ include('supplier/_tab_documentos.html.twig') }}
+    {% else %}
+        <div class="card">
+            <div class="empty-hint">
+                La sección <strong>{{ tabs[tab].label }}</strong> de este proveedor estará disponible próximamente.
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Calendario · Anuska Complementos{% endblock %}
+
+{% set months = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] %}
+{% set today = 'now'|date('Y-m-d') %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ months[current|date('n')] }} {{ current|date('Y') }}</h1>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('appointment_index', {view: 'calendar', year: prev|date('Y'), month: prev|date('n')}) }}">← Anterior</a>
+            <a class="btn btn--ghost" href="{{ path('appointment_index', {view: 'calendar', year: next|date('Y'), month: next|date('n')}) }}">Siguiente →</a>
+            <a class="btn btn--ghost" href="{{ path('appointment_index') }}">Lista</a>
+            <a class="btn btn--primary" href="{{ path('appointment_new') }}">Nueva cita</a>
+        </div>
+    </div>
+
+    <div class="calendar">
+        {% for dow in ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'] %}
+            <div class="calendar__dow">{{ dow }}</div>
+        {% endfor %}
+        {% for week in weeks %}
+            {% for day in week %}
+                <div class="calendar__cell {{ not day.inMonth ? 'is-out' }} {{ day.date|date('Y-m-d') == today ? 'is-today' }}">
+                    <span class="calendar__num">{{ day.date|date('j') }}</span>
+                    {% for appointment in day.appointments %}
+                        <a class="calendar__event is-{{ appointment.status.value }}"
+                           href="{{ path('appointment_edit', {id: appointment.id}) }}"
+                           title="{{ appointment.startsAt|date('H:i') }} · {{ appointment.title }}{% if appointment.supplier %} ({{ appointment.supplier.brandName }}){% endif %}">
+                            {{ appointment.startsAt|date('H:i') }} {{ appointment.title }}
+                        </a>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endblock %}

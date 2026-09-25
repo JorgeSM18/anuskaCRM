@@ -1,0 +1,39 @@
+// ============================================================
+//  Tokens de diseño — Anuska Complementos CRM
+//  Color de marca de la tienda: #3d1f00 (marrón de la etiqueta)
+// ============================================================
+
+:root {
+    // Marca
+    --brand:        #3d1f00;
+    --brand-hover:  #52290a;
+    --brand-200:    #e9ddd0;
+    --brand-100:    #f4ece3;
+    --brand-50:     #faf6f0;
+
+    // Texto y superficies
+    --ink:          #1c1917;
+    --ink-soft:     #57534e;
+    --ink-faint:    #8a8279;
+    --line:         #e7e2db;
+    --line-strong:  #d8d0c6;
+    --surface:      #ffffff;
+    --bg:           #fbfaf8;
+
+    // Estados
+    --ok:     #1a7f4b;  --ok-bg:     #e7f4ec;
+    --warn:   #b45309;  --warn-bg:   #fdf0e2;
+    --danger: #b42318;  --danger-bg: #fdeceb;
+    --info:   #1d4ed8;  --info-bg:   #e8eefc;
+
+    // Formas
+    --radius:     10px;
+    --radius-sm:  7px;
+    --shadow-sm:  0 1px 2px rgba(28, 25, 23, .06);
+    --shadow-md:  0 4px 16px rgba(28, 25, 23, .10);
+
+    // Tipografía y medidas
+    --font: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --sidebar-w: 248px;
+    --topbar-h:  60px;
+}

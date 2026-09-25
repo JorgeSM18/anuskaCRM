@@ -1,0 +1,6 @@
+{# Tarjeta de resumen. Params: label, value, sub (opcional), muted (bool). #}
+<div class="stat-card">
+    <div class="stat-card__label">{{ label }}</div>
+    <div class="stat-card__value{{ muted|default(false) ? ' is-muted' }}">{{ value }}</div>
+    {% if sub is defined and sub %}<div class="stat-card__sub">{{ sub }}</div>{% endif %}
+</div>

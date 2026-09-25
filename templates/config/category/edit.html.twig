@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar categoría · Configuración{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Editar categoría</h1>
+    </div>
+
+    <div class="card" style="max-width:420px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-row">
+                    {{ form_label(form.name) }}
+                    {{ form_widget(form.name) }}
+                    {{ form_errors(form.name) }}
+                </div>
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ path('category_index') }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {% block head_meta %}{% endblock %}
+        <title>{% block title %}Anuska Complementos{% endblock %}</title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧵</text></svg>">
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}
+            {% block importmap %}{{ importmap('app') }}{% endblock %}
+        {% endblock %}
+    </head>
+    <body>
+        {% if app.user %}
+            <input type="checkbox" id="navToggle" class="nav-toggle-cb">
+            <div class="app-shell">
+                {{ include('_partials/_sidebar.html.twig') }}
+                <div class="main">
+                    <header class="topbar">
+                        <label for="navToggle" class="btn btn--ghost topbar__burger" aria-label="Menú">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                        </label>
+                        <form class="search" action="{{ path('search') }}" method="get" role="search">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="search" name="q" value="{{ app.request.query.get('q') }}" placeholder="Buscar proveedores, pedidos, facturas…" autocomplete="off" aria-label="Buscar en el CRM">
+                        </form>
+                        <div class="topbar__actions">
+                            <a class="btn btn--ghost" href="{{ path('app_logout') }}">Salir</a>
+                        </div>
+                    </header>
+                    <main class="content">
+                        {{ include('_partials/_flash.html.twig') }}
+                        {% block body %}{% endblock %}
+                    </main>
+                </div>
+            </div>
+        {% else %}
+            <div class="auth-shell">
+                {% block auth_body %}{% endblock %}
+            </div>
+        {% endif %}
+    </body>
+</html>

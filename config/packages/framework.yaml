@@ -1,0 +1,26 @@
+# see https://symfony.com/doc/current/reference/configuration/framework.html
+framework:
+    secret: '%env(APP_SECRET)%'
+
+    # Detrás del proxy local de Tailscale (tailscale serve → 127.0.0.1): confiar en las
+    # cabeceras X-Forwarded-* para que Symfony detecte HTTPS y el host real. Sin esto,
+    # la redirección tras el login se genera con el host interno y la CSP la bloquea.
+    trusted_proxies: '127.0.0.1,::1'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port']
+
+    # Note that the session will be started ONLY if you read or write from it.
+    session:
+        cookie_secure: auto        # cookie 'Secure' automáticamente bajo HTTPS
+        cookie_httponly: true      # no accesible desde JavaScript
+        cookie_samesite: lax       # protege contra CSRF cross-site sin romper enlaces desde emails
+        gc_maxlifetime: 86400      # 1 día de inactividad máx.
+        cookie_lifetime: 0         # la cookie caduca al cerrar el navegador
+
+    #esi: true
+    #fragments: true
+
+when@test:
+    framework:
+        test: true
+        session:
+            storage_factory_id: session.storage.factory.mock_file

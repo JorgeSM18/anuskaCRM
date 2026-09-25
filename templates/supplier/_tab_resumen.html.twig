@@ -1,0 +1,71 @@
+{# Contenido de la pestaña "Resumen". Recibe `supplier` del contexto padre. #}
+<div class="two-col">
+    {# Datos #}
+    <div class="card">
+        <div class="card__body">
+            <h3 style="margin-bottom:14px">Datos</h3>
+            <dl style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0">
+                <dt class="text-muted">Nombre fiscal</dt><dd style="margin:0">{{ supplier.legalName ?: '—' }}</dd>
+                <dt class="text-muted">CIF / NIF</dt><dd style="margin:0">{{ supplier.taxId ?: '—' }}</dd>
+                <dt class="text-muted">Teléfono</dt><dd style="margin:0">{{ supplier.phone ?: '—' }}</dd>
+                <dt class="text-muted">Email</dt><dd style="margin:0">{% if supplier.email %}<a href="mailto:{{ supplier.email }}">{{ supplier.email }}</a>{% else %}—{% endif %}</dd>
+                <dt class="text-muted">Web</dt><dd style="margin:0">{% if supplier.website %}<a href="{{ supplier.website }}" target="_blank" rel="noopener">{{ supplier.website }}</a>{% else %}—{% endif %}</dd>
+                <dt class="text-muted">Dirección</dt><dd style="margin:0;white-space:pre-line">{{ supplier.address ?: '—' }}</dd>
+                <dt class="text-muted">Categorías</dt>
+                <dd style="margin:0;display:flex;flex-wrap:wrap;gap:6px">
+                    {% for c in supplier.categories %}<span class="badge badge--muted">{{ c.name }}</span>{% else %}—{% endfor %}
+                </dd>
+            </dl>
+            {% if supplier.notes %}
+                <h3 style="margin:18px 0 8px">Notas</h3>
+                <p style="margin:0;white-space:pre-line">{{ supplier.notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# Contactos #}
+    <div class="card">
+        <div class="card__body">
+            <div style="display:flex;align-items:center;margin-bottom:14px">
+                <h3 style="margin:0">Contactos</h3>
+                <a class="btn btn--ghost" style="margin-left:auto" href="{{ path('contact_new', {id: supplier.id}) }}">+ Añadir</a>
+            </div>
+
+            {% if supplier.contacts is empty %}
+                <p class="text-muted" style="margin:0">Sin contactos todavía.</p>
+            {% else %}
+                {% for contact in supplier.contacts %}
+                    <div style="display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)">
+                        <div style="flex:1;min-width:0">
+                            <strong>{{ contact.fullName }}</strong>
+                            {% if supplier.primaryContact and supplier.primaryContact.id == contact.id %}<span class="badge badge--info">Principal</span>{% endif %}
+                            {% if not contact.active %}<span class="badge badge--muted">Inactivo</span>{% endif %}
+                            <div class="text-muted" style="font-size:13px">
+                                {{ contact.role.label }}{% if contact.jobTitle %} · {{ contact.jobTitle }}{% endif %}
+                            </div>
+                            <div class="text-muted" style="font-size:13px">
+                                {% if contact.phone %}{{ contact.phone }}{% endif %}
+                                {% if contact.email %} · <a href="mailto:{{ contact.email }}">{{ contact.email }}</a>{% endif %}
+                            </div>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end">
+                            <a href="{{ path('contact_edit', {id: contact.id}) }}" style="font-size:13px">Editar</a>
+                            {% if not (supplier.primaryContact and supplier.primaryContact.id == contact.id) %}
+                                <form method="post" action="{{ path('supplier_set_primary', {id: supplier.id, contactId: contact.id}) }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('primary' ~ supplier.id) }}">
+                                    <button type="submit" style="background:none;border:none;color:var(--brand);cursor:pointer;font-size:13px;padding:0">Hacer principal</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{# Auditoría #}
+<p class="text-muted" style="font-size:12px;margin-top:18px">
+    {% if supplier.createdAt %}Creado {{ supplier.createdBy ? 'por ' ~ supplier.createdBy.fullName : '' }} el {{ supplier.createdAt|date('d/m/Y H:i') }}.{% endif %}
+    {% if supplier.updatedAt %} Última modificación {{ supplier.updatedBy ? 'por ' ~ supplier.updatedBy.fullName : '' }} el {{ supplier.updatedAt|date('d/m/Y H:i') }}.{% endif %}
+</p>

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nueva factura' : 'Editar factura' }} · {{ supplier.brandName }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nueva factura' : 'Editar factura' }}</h1>
+        <div class="text-muted" style="margin-left:12px;align-self:center">{{ supplier.brandName }}</div>
+    </div>
+
+    <div class="card" style="max-width:680px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-grid">
+                    <div class="form-row">{{ form_label(form.number) }}{{ form_widget(form.number) }}{{ form_errors(form.number) }}</div>
+                    <div class="form-row">{{ form_label(form.status) }}{{ form_widget(form.status) }}{{ form_errors(form.status) }}</div>
+                    <div class="form-row">{{ form_label(form.issuedAt) }}{{ form_widget(form.issuedAt) }}{{ form_errors(form.issuedAt) }}</div>
+                    <div class="form-row">{{ form_label(form.dueAt) }}{{ form_widget(form.dueAt) }}{{ form_errors(form.dueAt) }}</div>
+                    <div class="form-row">{{ form_label(form.baseAmount) }}{{ form_widget(form.baseAmount) }}{{ form_errors(form.baseAmount) }}</div>
+                    <div class="form-row">{{ form_label(form.vatRate) }}{{ form_widget(form.vatRate) }}{{ form_errors(form.vatRate) }}<p class="form-help">La cuota de IVA y el total se calculan automáticamente.</p></div>
+                    <div class="form-row">{{ form_label(form.paidAt) }}{{ form_widget(form.paidAt) }}{{ form_errors(form.paidAt) }}</div>
+                    <div class="form-row">{{ form_label(form.purchaseOrder) }}{{ form_widget(form.purchaseOrder) }}{{ form_errors(form.purchaseOrder) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.notes) }}{{ form_widget(form.notes) }}{{ form_errors(form.notes) }}</div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ is_new ? path('supplier_tab', {id: supplier.id, tab: 'facturas'}) : path('invoice_show', {id: invoice.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

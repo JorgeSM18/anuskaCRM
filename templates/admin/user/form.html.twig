@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nuevo usuario' : 'Editar usuario' }} · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nuevo usuario' : 'Editar usuario' }}</h1>
+    </div>
+
+    <div class="card" style="max-width:520px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-row">
+                    {{ form_label(form.fullName) }}
+                    {{ form_widget(form.fullName) }}
+                    {{ form_errors(form.fullName) }}
+                </div>
+                <div class="form-row">
+                    {{ form_label(form.email) }}
+                    {{ form_widget(form.email) }}
+                    {{ form_errors(form.email) }}
+                </div>
+                <div class="form-row">
+                    {{ form_label(form.plainPassword) }}
+                    {{ form_widget(form.plainPassword) }}
+                    {{ form_errors(form.plainPassword) }}
+                </div>
+                <div class="checkbox-row">
+                    {{ form_widget(form.isAdmin) }}
+                    {{ form_label(form.isAdmin) }}
+                </div>
+                {% if form.isAdmin.vars.help is defined %}
+                    <p class="form-help">{{ form.isAdmin.vars.help }}</p>
+                {% endif %}
+
+                <div style="display:flex;gap:10px;margin-top:22px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ path('admin_user_index') }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

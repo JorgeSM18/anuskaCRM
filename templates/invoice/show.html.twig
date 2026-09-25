@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Factura {{ invoice.number }} · {{ invoice.supplier.brandName }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <h1>Factura {{ invoice.number }}</h1>
+                {{ include('_partials/_invoice_status.html.twig') }}
+            </div>
+            <div class="text-muted" style="margin-top:4px">
+                <a href="{{ path('supplier_show', {id: invoice.supplier.id}) }}">{{ invoice.supplier.brandName }}</a>
+            </div>
+        </div>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('supplier_tab', {id: invoice.supplier.id, tab: 'facturas'}) }}">Volver</a>
+            <a class="btn btn--primary" href="{{ path('invoice_edit', {id: invoice.id}) }}">Editar</a>
+        </div>
+    </div>
+
+    <div class="card" style="max-width:520px">
+        <div class="card__body">
+            <dl style="display:grid;grid-template-columns:auto 1fr;gap:8px 16px;margin:0">
+                <dt class="text-muted">Emisión</dt><dd style="margin:0">{{ invoice.issuedAt ? invoice.issuedAt|date('d/m/Y') : '—' }}</dd>
+                <dt class="text-muted">Vencimiento</dt><dd style="margin:0">{{ invoice.dueAt ? invoice.dueAt|date('d/m/Y') : '—' }}</dd>
+                <dt class="text-muted">Pedido relacionado</dt><dd style="margin:0">{% if invoice.purchaseOrder %}<a href="{{ path('purchase_order_show', {id: invoice.purchaseOrder.id}) }}">{{ invoice.purchaseOrder.number }}</a>{% else %}—{% endif %}</dd>
+                <dt class="text-muted">Pagada el</dt><dd style="margin:0">{{ invoice.paidAt ? invoice.paidAt|date('d/m/Y') : '—' }}</dd>
+            </dl>
+
+            <div style="border-top:1px solid var(--line);margin-top:16px;padding-top:16px">
+                <dl style="display:grid;grid-template-columns:1fr auto;gap:8px 16px;margin:0">
+                    <dt class="text-muted">Base imponible</dt><dd style="margin:0;text-align:right">{{ invoice.baseAmount|money }}</dd>
+                    <dt class="text-muted">IVA ({{ invoice.vatRate }}%)</dt><dd style="margin:0;text-align:right">{{ invoice.vatAmount|money }}</dd>
+                    <dt style="font-weight:700">Total</dt><dd style="margin:0;text-align:right;font-weight:700;font-size:18px">{{ invoice.total|money }}</dd>
+                </dl>
+            </div>
+
+            {% if invoice.notes %}
+                <h3 style="margin:18px 0 8px">Notas</h3>
+                <p style="margin:0;white-space:pre-line">{{ invoice.notes }}</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {# ---------- Pagos ---------- #}
+    <div class="card" style="max-width:520px;margin-top:18px">
+        <div class="card__body">
+            <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+                <h3 style="margin:0">Pagos</h3>
+                <span class="text-muted">Pagado: <strong>{{ invoice.paidAmount|money }}</strong> · Pendiente: <strong>{{ invoice.pendingAmount|money }}</strong></span>
+            </div>
+
+            {% if invoice.payments is not empty %}
+                <table class="table" style="margin-bottom:14px">
+                    <thead><tr><th>Fecha</th><th>Método</th><th style="text-align:right">Importe</th><th></th></tr></thead>
+                    <tbody>
+                        {% for payment in invoice.payments %}
+                            <tr>
+                                <td class="text-muted">{{ payment.paidAt ? payment.paidAt|date('d/m/Y') : '—' }}</td>
+                                <td class="text-muted">{{ payment.method ?: '—' }}</td>
+                                <td style="text-align:right">{{ payment.amount|money }}</td>
+                                <td style="text-align:right">
+                                    <form method="post" action="{{ path('payment_delete', {id: payment.id}) }}" style="display:inline"
+                                          data-controller="confirm" data-confirm-message-value="¿Eliminar este pago?">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_payment' ~ payment.id) }}">
+                                        <button type="submit" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:0">Borrar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+            {% if invoice.status.value != 'cancelled' %}
+                <form method="post" action="{{ path('payment_add', {id: invoice.id}) }}" class="doc-upload">
+                    <input type="hidden" name="_token" value="{{ csrf_token('add_payment' ~ invoice.id) }}">
+                    <input type="number" step="0.01" min="0.01" name="amount" placeholder="Importe €" required style="height:34px;padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);width:120px">
+                    <input type="date" name="paidAt" value="{{ 'now'|date('Y-m-d') }}" style="height:34px;padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--radius-sm)">
+                    <input type="text" name="method" placeholder="Método (opcional)" style="height:34px;padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--radius-sm)">
+                    <button class="btn btn--primary" type="submit">Registrar pago</button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div style="max-width:520px;margin-top:18px">
+        {{ include('_partials/_documents_section.html.twig', {owner_type: 'invoice', owner_id: invoice.id, documents: invoice.documents}) }}
+    </div>
+
+    <p class="text-muted" style="font-size:12px;margin-top:18px">
+        {% if invoice.createdAt %}Creada {{ invoice.createdBy ? 'por ' ~ invoice.createdBy.fullName : '' }} el {{ invoice.createdAt|date('d/m/Y H:i') }}.{% endif %}
+        {% if invoice.updatedAt %} Última modificación el {{ invoice.updatedAt|date('d/m/Y H:i') }}.{% endif %}
+    </p>
+{% endblock %}

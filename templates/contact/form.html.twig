@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nuevo contacto' : 'Editar contacto' }} · {{ supplier.brandName }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nuevo contacto' : 'Editar contacto' }}</h1>
+        <div class="text-muted" style="margin-left:12px;align-self:center">{{ supplier.brandName }}</div>
+    </div>
+
+    <div class="card" style="max-width:560px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-grid">
+                    <div class="form-row">{{ form_label(form.firstName) }}{{ form_widget(form.firstName) }}{{ form_errors(form.firstName) }}</div>
+                    <div class="form-row">{{ form_label(form.lastName) }}{{ form_widget(form.lastName) }}{{ form_errors(form.lastName) }}</div>
+                    <div class="form-row">{{ form_label(form.role) }}{{ form_widget(form.role) }}{{ form_errors(form.role) }}</div>
+                    <div class="form-row">{{ form_label(form.jobTitle) }}{{ form_widget(form.jobTitle) }}{{ form_errors(form.jobTitle) }}</div>
+                    <div class="form-row">{{ form_label(form.phone) }}{{ form_widget(form.phone) }}{{ form_errors(form.phone) }}</div>
+                    <div class="form-row">{{ form_label(form.email) }}{{ form_widget(form.email) }}{{ form_errors(form.email) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.notes) }}{{ form_widget(form.notes) }}{{ form_errors(form.notes) }}</div>
+                </div>
+                <div class="checkbox-row">{{ form_widget(form.isActive) }}{{ form_label(form.isActive) }}</div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ path('supplier_show', {id: supplier.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

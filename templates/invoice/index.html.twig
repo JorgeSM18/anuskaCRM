@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Facturas · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Facturas{% if supplier %} · {{ supplier.brandName }}{% endif %}</h1>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('invoice_export', app.request.query.all) }}">Exportar</a>
+        </div>
+    </div>
+
+    <form method="get" action="{{ path('invoice_index') }}" data-controller="autosubmit"
+          class="filter-bar">
+        {% if supplier %}<input type="hidden" name="supplier" value="{{ supplier.id }}">{% endif %}
+        <select name="status" data-action="autosubmit#submit" class="filter-select">
+            <option value="">Todos los estados</option>
+            {% for case in enum('App\\Enum\\InvoiceStatus').cases() %}
+                <option value="{{ case.value }}" {{ status == case ? 'selected' }}>{{ case.label() }}</option>
+            {% endfor %}
+        </select>
+        <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" name="q" value="{{ q }}" placeholder="Nº de factura…">
+        </div>
+        <button class="btn btn--ghost" type="submit">Filtrar</button>
+    </form>
+
+    <div class="card">
+        {% if total == 0 %}
+            <div class="empty-hint">No hay facturas que coincidan.</div>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Emisión</th><th>Nº</th><th>Proveedor</th><th>Vencimiento</th>
+                        <th>Estado</th><th style="text-align:right">Total</th><th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                        <tr>
+                            <td class="text-muted">{{ invoice.issuedAt ? invoice.issuedAt|date('d/m/Y') : '—' }}</td>
+                            <td><a href="{{ path('invoice_show', {id: invoice.id}) }}"><strong>{{ invoice.number }}</strong></a></td>
+                            <td><a href="{{ path('supplier_show', {id: invoice.supplier.id}) }}">{{ invoice.supplier.brandName }}</a></td>
+                            <td class="text-muted">{{ invoice.dueAt ? invoice.dueAt|date('d/m/Y') : '—' }}</td>
+                            <td>{{ include('_partials/_invoice_status.html.twig') }}</td>
+                            <td style="text-align:right"><strong>{{ invoice.total|money }}</strong></td>
+                            <td style="text-align:right"><a class="btn btn--ghost" href="{{ path('invoice_show', {id: invoice.id}) }}">Ver</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    {% if pages > 1 %}
+        <div style="display:flex;gap:6px;justify-content:center;margin-top:18px">
+            {% for p in 1..pages %}
+                {% set params = {page: p} %}
+                {% if status %}{% set params = params|merge({status: status.value}) %}{% endif %}
+                {% if q %}{% set params = params|merge({q: q}) %}{% endif %}
+                {% if supplier %}{% set params = params|merge({supplier: supplier.id}) %}{% endif %}
+                <a class="btn {{ p == page ? 'btn--primary' : 'btn--ghost' }}" href="{{ path('invoice_index', params) }}">{{ p }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

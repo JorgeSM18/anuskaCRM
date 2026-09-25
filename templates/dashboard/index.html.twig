@@ -1,0 +1,94 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panel · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Hola, {{ app.user.fullName|split(' ')|first }} 👋</h1>
+    </div>
+
+    {# ---------- Cifras clave ---------- #}
+    <div class="stat-strip">
+        {{ include('_partials/_stat_card.html.twig', {label: 'Importe pendiente', value: data.pendingAmount|money}) }}
+        {{ include('_partials/_stat_card.html.twig', {label: 'Pedidos abiertos', value: data.openOrders}) }}
+        {{ include('_partials/_stat_card.html.twig', {label: 'Citas próximas', value: data.upcomingCount}) }}
+    </div>
+
+    <div class="two-col">
+        {# ---------- Requiere tu atención ---------- #}
+        <div class="card">
+            <div class="card__body">
+                <h3 style="margin:0 0 12px">Requiere tu atención</h3>
+
+                {% if not data.hasAttentionItems %}
+                    <p class="text-muted" style="margin:0">Todo al día ✅ No hay nada pendiente ahora mismo.</p>
+                {% endif %}
+
+                {% if data.dueInvoices is not empty %}
+                    <h4 style="margin:16px 0 6px;font-size:13px;color:var(--ink-soft)">Facturas por vencer</h4>
+                    {% for i in data.dueInvoices %}
+                        <div style="padding:6px 0;border-bottom:1px solid var(--line);display:flex;gap:8px;align-items:center">
+                            <a href="{{ path('invoice_show', {id: i.id}) }}" style="flex:1">{{ i.number }} — {{ i.supplier.brandName }}</a>
+                            {% if i.overdue %}<span class="badge badge--danger">Vencida</span>{% endif %}
+                            <span class="text-muted">{{ i.dueAt|date('d/m') }} · {{ i.pendingAmount|money }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if data.todayAppointments is not empty or data.upcomingAppointments is not empty %}
+                    <h4 style="margin:16px 0 6px;font-size:13px;color:var(--ink-soft)">Citas</h4>
+                    {% for a in data.todayAppointments %}
+                        <div style="padding:6px 0;border-bottom:1px solid var(--line)">
+                            <span class="badge badge--warn">Hoy</span>
+                            <a href="{{ path('appointment_edit', {id: a.id}) }}">{{ a.startsAt|date('H:i') }} · {{ a.title }}</a>
+                            {% if a.supplier %}<span class="text-muted"> — {{ a.supplier.brandName }}</span>{% endif %}
+                        </div>
+                    {% endfor %}
+                    {% for a in data.upcomingAppointments %}
+                        <div style="padding:6px 0;border-bottom:1px solid var(--line)">
+                            <a href="{{ path('appointment_edit', {id: a.id}) }}">{{ a.startsAt|date('d/m H:i') }} · {{ a.title }}</a>
+                            {% if a.supplier %}<span class="text-muted"> — {{ a.supplier.brandName }}</span>{% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if data.upcomingDeliveries is not empty %}
+                    <h4 style="margin:16px 0 6px;font-size:13px;color:var(--ink-soft)">Entregas previstas</h4>
+                    {% for o in data.upcomingDeliveries %}
+                        <div style="padding:6px 0;border-bottom:1px solid var(--line)">
+                            <a href="{{ path('purchase_order_show', {id: o.id}) }}">{{ o.expectedDeliveryAt|date('d/m') }} · Pedido {{ o.number }}</a>
+                            <span class="text-muted"> — {{ o.supplier.brandName }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
+                {% if data.pendingReplies is not empty %}
+                    <h4 style="margin:16px 0 6px;font-size:13px;color:var(--ink-soft)">Comunicaciones sin responder</h4>
+                    {% for c in data.pendingReplies %}
+                        <div style="padding:6px 0;border-bottom:1px solid var(--line)">
+                            {{ c.type.icon }} <a href="{{ path('supplier_tab', {id: c.supplier.id, tab: 'comunicaciones'}) }}">{{ c.subject }}</a>
+                            <span class="text-muted"> — {{ c.supplier.brandName }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+
+        {# ---------- Gasto en pedidos ---------- #}
+        <div class="card">
+            <div class="card__body">
+                <h3 style="margin:0 0 4px">Gasto en pedidos</h3>
+                <p class="text-muted" style="margin:0 0 16px;font-size:13px">Últimos 6 meses</p>
+                <div class="spend-chart">
+                    {% for bar in data.spendChart %}
+                        <div class="spend-chart__col">
+                            <span class="spend-chart__val">{{ bar.amount != '0.00' ? (bar.amount|money) : '' }}</span>
+                            <div class="spend-chart__bar" style="height:{{ bar.pct }}%" title="{{ bar.label }}: {{ bar.amount|money }}"></div>
+                            <span class="spend-chart__label">{{ bar.label }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,34 @@
+{# Pestaña "Pedidos" de la ficha. Recibe `supplier`. #}
+<div class="card">
+    <div class="card__body" style="display:flex;align-items:center">
+        <h3 style="margin:0">Pedidos del proveedor</h3>
+        <a class="btn btn--primary" style="margin-left:auto" href="{{ path('purchase_order_new', {id: supplier.id}) }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nuevo pedido
+        </a>
+    </div>
+    {% if supplier.purchaseOrders is empty %}
+        <div class="empty-hint">Este proveedor no tiene pedidos todavía.</div>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Fecha</th><th>Nº</th><th>Temporada</th><th>Estado</th>
+                    <th style="text-align:right">Importe</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in supplier.purchaseOrders %}
+                    <tr>
+                        <td class="text-muted">{{ order.orderedAt ? order.orderedAt|date('d/m/Y') : '—' }}</td>
+                        <td><a href="{{ path('purchase_order_show', {id: order.id}) }}"><strong>{{ order.number }}</strong></a></td>
+                        <td class="text-muted">{{ order.season ?: '—' }}</td>
+                        <td><span class="badge badge--{{ order.status.badge }}">{{ order.status.label }}</span></td>
+                        <td style="text-align:right">{{ (order.finalAmount ?? order.estimatedAmount)|money }}</td>
+                        <td style="text-align:right"><a href="{{ path('purchase_order_edit', {id: order.id}) }}" style="font-size:13px">Editar</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>

@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ fair.name }} · Ferias{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <div>
+            <div style="display:flex;align-items:center;gap:12px">
+                <h1>{{ fair.name }}</h1>
+                <span class="badge badge--{{ fair.status.badge }}">{{ fair.status.label }}</span>
+            </div>
+            <div class="text-muted" style="margin-top:4px;display:flex;gap:14px;flex-wrap:wrap">
+                {% if fair.city %}<span>📍 {{ fair.city }}{% if fair.location %} · {{ fair.location }}{% endif %}</span>{% endif %}
+                {% if fair.startsAt %}<span>📅 {{ fair.startsAt|date('d/m/Y') }}{% if fair.endsAt %} – {{ fair.endsAt|date('d/m/Y') }}{% endif %}</span>{% endif %}
+                {% if fair.edition %}<span>Edición {{ fair.edition }}</span>{% endif %}
+                {% if fair.website %}<span>🌐 <a href="{{ fair.website }}" target="_blank" rel="noopener">Web</a></span>{% endif %}
+            </div>
+        </div>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('fair_edit', {id: fair.id}) }}">Editar</a>
+            <form method="post" action="{{ path('fair_delete', {id: fair.id}) }}" style="display:inline"
+                  data-controller="confirm" data-confirm-message-value="¿Eliminar esta feria y sus participaciones?">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete_fair' ~ fair.id) }}">
+                <button class="btn btn--danger" type="submit">Borrar</button>
+            </form>
+        </div>
+    </div>
+
+    {% if fair.notes %}
+        <div class="card" style="margin-bottom:18px"><div class="card__body"><p style="margin:0;white-space:pre-line">{{ fair.notes }}</p></div></div>
+    {% endif %}
+
+    {# ---------- Proveedores presentes ---------- #}
+    <div class="card">
+        <div class="card__body">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap">
+                <h3 style="margin:0">Proveedores presentes</h3>
+                {% if available_suppliers %}
+                    <form method="post" action="{{ path('fair_participation_add', {id: fair.id}) }}" class="doc-upload">
+                        <input type="hidden" name="_token" value="{{ csrf_token('add_participation' ~ fair.id) }}">
+                        <select name="supplier" class="filter-select">
+                            {% for s in available_suppliers %}<option value="{{ s.id }}">{{ s.brandName }}</option>{% endfor %}
+                        </select>
+                        <button class="btn btn--primary" type="submit">Añadir proveedor</button>
+                    </form>
+                {% endif %}
+            </div>
+
+            {% if fair.participations is empty %}
+                <div class="empty-hint">Aún no hay proveedores en esta feria.</div>
+            {% else %}
+                {% for p in fair.participations %}
+                    <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)">
+                        <div style="flex:1;min-width:0">
+                            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                                <a href="{{ path('supplier_show', {id: p.supplier.id}) }}"><strong>{{ p.supplier.brandName }}</strong></a>
+                                {% if p.followUp %}<span class="badge badge--warn">Seguimiento</span>{% endif %}
+                            </div>
+                            {% if p.contactsMet %}<div class="text-muted" style="font-size:13px;margin-top:2px">👥 {{ p.contactsMet }}</div>{% endif %}
+                            {% if p.meetingNotes %}<div style="font-size:13px;margin-top:2px;white-space:pre-line">{{ p.meetingNotes }}</div>{% endif %}
+                            {% if p.nextAction %}<div class="text-muted" style="font-size:13px;margin-top:2px">➡️ Próxima acción: {{ p.nextAction }}</div>{% endif %}
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;white-space:nowrap">
+                            <a href="{{ path('fair_participation_edit', {id: p.id}) }}" style="font-size:13px">Editar notas</a>
+                            <form method="post" action="{{ path('fair_participation_delete', {id: p.id}) }}"
+                                  data-controller="confirm" data-confirm-message-value="¿Quitar a {{ p.supplier.brandName }} de la feria?">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete_participation' ~ p.id) }}">
+                                <button type="submit" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:13px;padding:0">Quitar</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    {# ---------- Documentos ---------- #}
+    <div style="margin-top:18px">
+        {{ include('_partials/_documents_section.html.twig', {owner_type: 'fair', owner_id: fair.id, documents: fair.documents}) }}
+    </div>
+{% endblock %}

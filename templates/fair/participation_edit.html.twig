@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Notas de participación · {{ participation.fair.name }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ participation.supplier.brandName }}</h1>
+        <div class="text-muted" style="margin-left:12px;align-self:center">{{ participation.fair.name }}</div>
+    </div>
+
+    <div class="card" style="max-width:560px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-row">{{ form_label(form.contactsMet) }}{{ form_widget(form.contactsMet) }}{{ form_errors(form.contactsMet) }}</div>
+                <div class="form-row">{{ form_label(form.meetingNotes) }}{{ form_widget(form.meetingNotes) }}{{ form_errors(form.meetingNotes) }}</div>
+                <div class="form-row">{{ form_label(form.nextAction) }}{{ form_widget(form.nextAction) }}{{ form_errors(form.nextAction) }}</div>
+                <div class="checkbox-row">{{ form_widget(form.followUp) }}{{ form_label(form.followUp) }}</div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ path('fair_show', {id: participation.fair.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

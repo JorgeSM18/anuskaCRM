@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nueva cita' : 'Editar cita' }} · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nueva cita' : 'Editar cita' }}</h1>
+        {% if supplier %}<div class="text-muted" style="margin-left:12px;align-self:center">{{ supplier.brandName }}</div>{% endif %}
+    </div>
+
+    <div class="card" style="max-width:620px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-row">{{ form_label(form.title) }}{{ form_widget(form.title) }}{{ form_errors(form.title) }}</div>
+                <div class="form-grid">
+                    <div class="form-row">{{ form_label(form.type) }}{{ form_widget(form.type) }}{{ form_errors(form.type) }}</div>
+                    <div class="form-row">{{ form_label(form.status) }}{{ form_widget(form.status) }}{{ form_errors(form.status) }}</div>
+                    <div class="form-row">{{ form_label(form.startsAt) }}{{ form_widget(form.startsAt) }}{{ form_errors(form.startsAt) }}</div>
+                    <div class="form-row">{{ form_label(form.durationMinutes) }}{{ form_widget(form.durationMinutes) }}{{ form_errors(form.durationMinutes) }}</div>
+                    {% if form.supplier is defined %}
+                        <div class="form-row">{{ form_label(form.supplier) }}{{ form_widget(form.supplier) }}{{ form_errors(form.supplier) }}</div>
+                    {% endif %}
+                    {% if form.contact is defined %}
+                        <div class="form-row">{{ form_label(form.contact) }}{{ form_widget(form.contact) }}{{ form_errors(form.contact) }}</div>
+                    {% endif %}
+                    <div class="form-row">{{ form_label(form.location) }}{{ form_widget(form.location) }}{{ form_errors(form.location) }}</div>
+                    <div class="form-row">{{ form_label(form.reminderAt) }}{{ form_widget(form.reminderAt) }}{{ form_errors(form.reminderAt) }}{% if form.reminderAt.vars.help %}<p class="form-help">{{ form.reminderAt.vars.help }}</p>{% endif %}</div>
+                </div>
+                <div class="form-row">{{ form_label(form.notes) }}{{ form_widget(form.notes) }}{{ form_errors(form.notes) }}</div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ supplier ? path('supplier_tab', {id: supplier.id, tab: 'citas'}) : path('appointment_index') }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

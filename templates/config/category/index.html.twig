@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Categorías · Configuración{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Categorías de producto</h1>
+    </div>
+
+    <div class="two-col">
+        {# Alta #}
+        <div class="card">
+            <div class="card__body">
+                <h3 style="margin:0 0 12px">Nueva categoría</h3>
+                {{ form_start(form) }}
+                    <div class="form-row">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+                    <button class="btn btn--primary" type="submit">Añadir</button>
+                {{ form_end(form) }}
+            </div>
+        </div>
+
+        {# Lista #}
+        <div class="card">
+            {% if categories is empty %}
+                <div class="empty-hint">Aún no hay categorías. Crea la primera con el formulario.</div>
+            {% else %}
+                <table class="table">
+                    <thead>
+                        <tr><th>Categoría</th><th>Proveedores</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        {% for category in categories %}
+                            <tr>
+                                <td><strong>{{ category.name }}</strong></td>
+                                <td class="text-muted">{{ category.suppliers|length }}</td>
+                                <td style="text-align:right;white-space:nowrap">
+                                    <a class="btn btn--ghost" href="{{ path('category_edit', {id: category.id}) }}">Editar</a>
+                                    <form method="post" action="{{ path('category_delete', {id: category.id}) }}" style="display:inline"
+                                          data-controller="confirm" data-confirm-message-value="¿Eliminar la categoría «{{ category.name }}»? Se quitará de los proveedores que la tengan.">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete_category' ~ category.id) }}">
+                                        <button class="btn btn--danger" type="submit">Borrar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

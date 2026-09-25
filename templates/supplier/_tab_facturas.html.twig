@@ -1,0 +1,35 @@
+{# Pestaña "Facturas" de la ficha. Recibe `supplier` y `stats`. #}
+<div class="card">
+    <div class="card__body" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <h3 style="margin:0">Facturas del proveedor</h3>
+        <span class="text-muted">Total: <strong>{{ stats.invoicedTotal|money }}</strong> · Pendiente: <strong>{{ stats.pendingTotal|money }}</strong></span>
+        <a class="btn btn--primary" style="margin-left:auto" href="{{ path('invoice_new', {id: supplier.id}) }}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nueva factura
+        </a>
+    </div>
+    {% if supplier.invoices is empty %}
+        <div class="empty-hint">Este proveedor no tiene facturas todavía.</div>
+    {% else %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Emisión</th><th>Nº</th><th>Vencimiento</th><th>Estado</th>
+                    <th style="text-align:right">Total</th><th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in supplier.invoices %}
+                    <tr>
+                        <td class="text-muted">{{ invoice.issuedAt ? invoice.issuedAt|date('d/m/Y') : '—' }}</td>
+                        <td><a href="{{ path('invoice_show', {id: invoice.id}) }}"><strong>{{ invoice.number }}</strong></a></td>
+                        <td class="text-muted">{{ invoice.dueAt ? invoice.dueAt|date('d/m/Y') : '—' }}</td>
+                        <td>{{ include('_partials/_invoice_status.html.twig') }}</td>
+                        <td style="text-align:right"><strong>{{ invoice.total|money }}</strong></td>
+                        <td style="text-align:right"><a href="{{ path('invoice_edit', {id: invoice.id}) }}" style="font-size:13px">Editar</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+</div>

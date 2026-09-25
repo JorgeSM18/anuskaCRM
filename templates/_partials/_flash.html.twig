@@ -1,0 +1,10 @@
+{% set flashes = app.flashes(['success', 'error', 'warning', 'info']) %}
+{% if flashes %}
+    <div class="flashes" role="status" aria-live="polite">
+        {% for type, messages in flashes %}
+            {% for message in messages %}
+                <div class="flash flash--{{ type }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+{% endif %}

@@ -1,0 +1,6 @@
+{# Badge de estado de factura. "Vencida" es derivado (pendiente + fuera de plazo). #}
+{% if invoice.overdue %}
+    <span class="badge badge--danger">Vencida</span>
+{% else %}
+    <span class="badge badge--{{ invoice.status.badge }}">{{ invoice.status.label }}</span>
+{% endif %}

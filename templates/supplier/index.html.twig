@@ -1,0 +1,99 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Proveedores · Anuska Complementos{% endblock %}
+
+{% macro sort_link(label, field, sort, dir, q, status, category) %}
+    {% set next_dir = (sort == field and dir == 'asc') ? 'desc' : 'asc' %}
+    {% set params = {sort: field, dir: next_dir} %}
+    {% if q %}{% set params = params|merge({q: q}) %}{% endif %}
+    {% if status %}{% set params = params|merge({status: status.value}) %}{% endif %}
+    {% if category %}{% set params = params|merge({category: category.id}) %}{% endif %}
+    <a href="{{ path('supplier_index', params) }}" style="color:inherit">
+        {{ label }}{% if sort == field %} {{ dir == 'asc' ? '▲' : '▼' }}{% endif %}
+    </a>
+{% endmacro %}
+
+{% import _self as h %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Proveedores</h1>
+        <div class="page-head__actions">
+            <a class="btn btn--ghost" href="{{ path('supplier_export', app.request.query.all) }}">Exportar</a>
+            <a class="btn btn--primary" href="{{ path('supplier_new') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nuevo proveedor
+            </a>
+        </div>
+    </div>
+
+    <form method="get" action="{{ path('supplier_index') }}" data-controller="autosubmit"
+          class="filter-bar">
+        <div class="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="search" name="q" value="{{ q }}" placeholder="Buscar marca, nombre fiscal, CIF, email…">
+        </div>
+        <select name="status" data-action="autosubmit#submit" class="filter-select">
+            <option value="">Todos los estados</option>
+            {% for case in enum('App\\Enum\\SupplierStatus').cases() %}
+                <option value="{{ case.value }}" {{ status == case ? 'selected' }}>{{ case.label() }}</option>
+            {% endfor %}
+        </select>
+        {% if allCategories %}
+            <select name="category" data-action="autosubmit#submit" class="filter-select">
+                <option value="">Todas las categorías</option>
+                {% for cat in allCategories %}
+                    <option value="{{ cat.id }}" {{ category and category.id == cat.id ? 'selected' }}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        {% endif %}
+        <button class="btn btn--ghost" type="submit">Buscar</button>
+    </form>
+
+    <div class="card">
+        {% if total == 0 %}
+            <div class="empty-hint">No hay proveedores que coincidan. <a href="{{ path('supplier_new') }}">Crea el primero</a>.</div>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>{{ h.sort_link('Marca', 'brandName', sort, dir, q, status, category) }}</th>
+                        <th>Comercial principal</th>
+                        <th>Teléfono</th>
+                        <th>{{ h.sort_link('Estado', 'status', sort, dir, q, status, category) }}</th>
+                        <th style="text-align:right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for supplier in suppliers %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('supplier_show', {id: supplier.id}) }}"><strong>{{ supplier.brandName }}</strong></a>
+                                {% if supplier.legalName %}<div class="text-muted" style="font-size:12px">{{ supplier.legalName }}</div>{% endif %}
+                            </td>
+                            <td class="text-muted">{{ supplier.primaryContact ? supplier.primaryContact.fullName : '—' }}</td>
+                            <td class="text-muted">{{ supplier.phone ?: '—' }}</td>
+                            <td><span class="badge badge--{{ supplier.status.badge }}">{{ supplier.status.label }}</span></td>
+                            <td style="text-align:right;white-space:nowrap">
+                                <a class="btn btn--ghost" href="{{ path('supplier_show', {id: supplier.id}) }}">Ver</a>
+                                <a class="btn btn--ghost" href="{{ path('supplier_edit', {id: supplier.id}) }}">Editar</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    {% if pages > 1 %}
+        <div style="display:flex;gap:6px;justify-content:center;margin-top:18px;align-items:center">
+            {% for p in 1..pages %}
+                {% set params = {page: p, sort: sort, dir: dir} %}
+                {% if q %}{% set params = params|merge({q: q}) %}{% endif %}
+                {% if status %}{% set params = params|merge({status: status.value}) %}{% endif %}
+                {% if category %}{% set params = params|merge({category: category.id}) %}{% endif %}
+                <a class="btn {{ p == page ? 'btn--primary' : 'btn--ghost' }}" href="{{ path('supplier_index', params) }}">{{ p }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

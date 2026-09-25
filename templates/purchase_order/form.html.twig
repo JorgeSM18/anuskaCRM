@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nuevo pedido' : 'Editar pedido' }} · {{ supplier.brandName }}{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nuevo pedido' : 'Editar pedido' }}</h1>
+        <div class="text-muted" style="margin-left:12px;align-self:center">{{ supplier.brandName }}</div>
+    </div>
+
+    <div class="card" style="max-width:680px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-grid">
+                    <div class="form-row">{{ form_label(form.number) }}{{ form_widget(form.number) }}{{ form_errors(form.number) }}</div>
+                    <div class="form-row">{{ form_label(form.orderedAt) }}{{ form_widget(form.orderedAt) }}{{ form_errors(form.orderedAt) }}</div>
+                    <div class="form-row">{{ form_label(form.status) }}{{ form_widget(form.status) }}{{ form_errors(form.status) }}</div>
+                    <div class="form-row">{{ form_label(form.contact) }}{{ form_widget(form.contact) }}{{ form_errors(form.contact) }}</div>
+                    <div class="form-row">{{ form_label(form.season) }}{{ form_widget(form.season) }}{{ form_errors(form.season) }}</div>
+                    <div class="form-row">{{ form_label(form.campaign) }}{{ form_widget(form.campaign) }}{{ form_errors(form.campaign) }}</div>
+                    <div class="form-row">{{ form_label(form.estimatedAmount) }}{{ form_widget(form.estimatedAmount) }}{{ form_errors(form.estimatedAmount) }}</div>
+                    <div class="form-row">{{ form_label(form.finalAmount) }}{{ form_widget(form.finalAmount) }}{{ form_errors(form.finalAmount) }}</div>
+                    <div class="form-row">{{ form_label(form.expectedDeliveryAt) }}{{ form_widget(form.expectedDeliveryAt) }}{{ form_errors(form.expectedDeliveryAt) }}</div>
+                    <div class="form-row">{{ form_label(form.receivedAt) }}{{ form_widget(form.receivedAt) }}{{ form_errors(form.receivedAt) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.content) }}{{ form_widget(form.content) }}{{ form_errors(form.content) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.notes) }}{{ form_widget(form.notes) }}{{ form_errors(form.notes) }}</div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ is_new ? path('supplier_tab', {id: supplier.id, tab: 'pedidos'}) : path('purchase_order_show', {id: order.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{# Pestaña "Comunicaciones" de la ficha. Recibe `supplier`. #}
+<div class="card">
+    <div class="card__body">
+        <div style="display:flex;align-items:center;margin-bottom:8px">
+            <h3 style="margin:0">Comunicaciones</h3>
+            <a class="btn btn--primary" style="margin-left:auto" href="{{ path('communication_new', {id: supplier.id}) }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nueva comunicación
+            </a>
+        </div>
+        {% if supplier.communications is empty %}
+            <div class="empty-hint">Sin comunicaciones registradas todavía.</div>
+        {% else %}
+            {% for communication in supplier.communications %}
+                {{ include('_partials/_communication_item.html.twig') }}
+            {% endfor %}
+        {% endif %}
+    </div>
+</div>

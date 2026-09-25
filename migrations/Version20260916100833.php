@@ -1,0 +1,107 @@
+<?php
+
+declare(strict_types=1);
+
+namespace DoctrineMigrations;
+
+use Doctrine\DBAL\Schema\Schema;
+use Doctrine\Migrations\AbstractMigration;
+
+/**
+ * Auto-generated Migration: Please modify to your needs!
+ */
+final class Version20260916100833 extends AbstractMigration
+{
+    public function getDescription(): string
+    {
+        return '';
+    }
+
+    public function up(Schema $schema): void
+    {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE TABLE appointment (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, title VARCHAR(160) NOT NULL, starts_at DATETIME DEFAULT NULL, duration_minutes SMALLINT DEFAULT NULL, type VARCHAR(255) NOT NULL, location VARCHAR(180) DEFAULT NULL, notes CLOB DEFAULT NULL, status VARCHAR(255) NOT NULL, reminder_at DATETIME DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, supplier_id INTEGER DEFAULT NULL, contact_id INTEGER DEFAULT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_FE38F8442ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_FE38F844E7A1254A FOREIGN KEY (contact_id) REFERENCES contact (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_FE38F844B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_FE38F844896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_FE38F8442ADD6D8C ON appointment (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_FE38F844E7A1254A ON appointment (contact_id)');
+        $this->addSql('CREATE INDEX IDX_FE38F844B03A8386 ON appointment (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_FE38F844896DBBDE ON appointment (updated_by_id)');
+        $this->addSql('CREATE INDEX IDX_FE38F84455A0507C ON appointment (starts_at)');
+        $this->addSql('CREATE TABLE category (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(60) NOT NULL)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_64C19C15E237E06 ON category (name)');
+        $this->addSql('CREATE TABLE communication (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, occurred_at DATETIME DEFAULT NULL, subject VARCHAR(180) NOT NULL, type VARCHAR(255) NOT NULL, body CLOB DEFAULT NULL, is_important BOOLEAN NOT NULL, pending_reply BOOLEAN NOT NULL, source_type VARCHAR(255) NOT NULL, external_id VARCHAR(255) DEFAULT NULL, from_address VARCHAR(255) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, supplier_id INTEGER NOT NULL, contact_id INTEGER DEFAULT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_F9AFB5EB2ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F9AFB5EBE7A1254A FOREIGN KEY (contact_id) REFERENCES contact (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F9AFB5EBB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_F9AFB5EB896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_F9AFB5EB2ADD6D8C ON communication (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_F9AFB5EBE7A1254A ON communication (contact_id)');
+        $this->addSql('CREATE INDEX IDX_F9AFB5EBB03A8386 ON communication (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_F9AFB5EB896DBBDE ON communication (updated_by_id)');
+        $this->addSql('CREATE INDEX IDX_F9AFB5EB87C03D1B ON communication (occurred_at)');
+        $this->addSql('CREATE INDEX IDX_F9AFB5EB623D44E8 ON communication (pending_reply)');
+        $this->addSql('CREATE TABLE contact (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, first_name VARCHAR(80) NOT NULL, last_name VARCHAR(120) DEFAULT NULL, role VARCHAR(255) NOT NULL, job_title VARCHAR(120) DEFAULT NULL, phone VARCHAR(30) DEFAULT NULL, email VARCHAR(180) DEFAULT NULL, notes CLOB DEFAULT NULL, is_active BOOLEAN NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, supplier_id INTEGER NOT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_4C62E6382ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_4C62E638B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_4C62E638896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_4C62E6382ADD6D8C ON contact (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_4C62E638B03A8386 ON contact (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_4C62E638896DBBDE ON contact (updated_by_id)');
+        $this->addSql('CREATE TABLE document (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, original_name VARCHAR(255) NOT NULL, storage_path VARCHAR(255) NOT NULL, mime_type VARCHAR(100) NOT NULL, size_bytes INTEGER NOT NULL, title VARCHAR(180) DEFAULT NULL, created_at DATETIME NOT NULL, uploaded_by_id INTEGER DEFAULT NULL, supplier_id INTEGER DEFAULT NULL, purchase_order_id INTEGER DEFAULT NULL, invoice_id INTEGER DEFAULT NULL, communication_id INTEGER DEFAULT NULL, fair_id INTEGER DEFAULT NULL, CONSTRAINT FK_D8698A76A2B28FE8 FOREIGN KEY (uploaded_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_D8698A762ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_D8698A76A45D7E6A FOREIGN KEY (purchase_order_id) REFERENCES purchase_order (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_D8698A762989F1FD FOREIGN KEY (invoice_id) REFERENCES invoice (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_D8698A761C2D1E0C FOREIGN KEY (communication_id) REFERENCES communication (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_D8698A767AB61B57 FOREIGN KEY (fair_id) REFERENCES fair (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_D8698A76A2B28FE8 ON document (uploaded_by_id)');
+        $this->addSql('CREATE INDEX IDX_D8698A762ADD6D8C ON document (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_D8698A76A45D7E6A ON document (purchase_order_id)');
+        $this->addSql('CREATE INDEX IDX_D8698A762989F1FD ON document (invoice_id)');
+        $this->addSql('CREATE INDEX IDX_D8698A761C2D1E0C ON document (communication_id)');
+        $this->addSql('CREATE INDEX IDX_D8698A767AB61B57 ON document (fair_id)');
+        $this->addSql('CREATE TABLE fair (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, name VARCHAR(160) NOT NULL, city VARCHAR(120) DEFAULT NULL, location VARCHAR(180) DEFAULT NULL, starts_at DATE DEFAULT NULL, ends_at DATE DEFAULT NULL, edition VARCHAR(40) DEFAULT NULL, website VARCHAR(180) DEFAULT NULL, notes CLOB DEFAULT NULL, status VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_7C28162AB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_7C28162A896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_7C28162AB03A8386 ON fair (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_7C28162A896DBBDE ON fair (updated_by_id)');
+        $this->addSql('CREATE INDEX IDX_7C28162A55A0507C ON fair (starts_at)');
+        $this->addSql('CREATE TABLE fair_participation (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, contacts_met CLOB DEFAULT NULL, meeting_notes CLOB DEFAULT NULL, follow_up BOOLEAN NOT NULL, next_action VARCHAR(200) DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, fair_id INTEGER NOT NULL, supplier_id INTEGER NOT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_E5B114177AB61B57 FOREIGN KEY (fair_id) REFERENCES fair (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E5B114172ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E5B11417B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_E5B11417896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_E5B114177AB61B57 ON fair_participation (fair_id)');
+        $this->addSql('CREATE INDEX IDX_E5B114172ADD6D8C ON fair_participation (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_E5B11417B03A8386 ON fair_participation (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_E5B11417896DBBDE ON fair_participation (updated_by_id)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_E5B114177AB61B572ADD6D8C ON fair_participation (fair_id, supplier_id)');
+        $this->addSql('CREATE TABLE invoice (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, number VARCHAR(50) NOT NULL, issued_at DATE DEFAULT NULL, due_at DATE DEFAULT NULL, base_amount NUMERIC(12, 2) DEFAULT NULL, vat_rate NUMERIC(5, 2) DEFAULT NULL, vat_amount NUMERIC(12, 2) NOT NULL, total NUMERIC(12, 2) NOT NULL, status VARCHAR(255) NOT NULL, paid_at DATE DEFAULT NULL, notes CLOB DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, supplier_id INTEGER NOT NULL, purchase_order_id INTEGER DEFAULT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_906517442ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_90651744A45D7E6A FOREIGN KEY (purchase_order_id) REFERENCES purchase_order (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_90651744B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_90651744896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_906517442ADD6D8C ON invoice (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_90651744A45D7E6A ON invoice (purchase_order_id)');
+        $this->addSql('CREATE INDEX IDX_90651744B03A8386 ON invoice (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_90651744896DBBDE ON invoice (updated_by_id)');
+        $this->addSql('CREATE INDEX IDX_906517447B00651C ON invoice (status)');
+        $this->addSql('CREATE INDEX IDX_906517445303022F ON invoice (due_at)');
+        $this->addSql('CREATE TABLE payment (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, amount NUMERIC(12, 2) DEFAULT NULL, paid_at DATE DEFAULT NULL, method VARCHAR(60) DEFAULT NULL, notes CLOB DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, invoice_id INTEGER NOT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_6D28840D2989F1FD FOREIGN KEY (invoice_id) REFERENCES invoice (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_6D28840DB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_6D28840D896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_6D28840D2989F1FD ON payment (invoice_id)');
+        $this->addSql('CREATE INDEX IDX_6D28840DB03A8386 ON payment (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_6D28840D896DBBDE ON payment (updated_by_id)');
+        $this->addSql('CREATE TABLE purchase_order (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, number VARCHAR(50) NOT NULL, ordered_at DATE DEFAULT NULL, season VARCHAR(40) DEFAULT NULL, campaign VARCHAR(80) DEFAULT NULL, content CLOB DEFAULT NULL, status VARCHAR(255) NOT NULL, estimated_amount NUMERIC(12, 2) DEFAULT NULL, final_amount NUMERIC(12, 2) DEFAULT NULL, expected_delivery_at DATE DEFAULT NULL, received_at DATE DEFAULT NULL, notes CLOB DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, supplier_id INTEGER NOT NULL, contact_id INTEGER DEFAULT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_21E210B22ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_21E210B2E7A1254A FOREIGN KEY (contact_id) REFERENCES contact (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_21E210B2B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_21E210B2896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_21E210B22ADD6D8C ON purchase_order (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_21E210B2E7A1254A ON purchase_order (contact_id)');
+        $this->addSql('CREATE INDEX IDX_21E210B2B03A8386 ON purchase_order (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_21E210B2896DBBDE ON purchase_order (updated_by_id)');
+        $this->addSql('CREATE INDEX IDX_21E210B27B00651C ON purchase_order (status)');
+        $this->addSql('CREATE INDEX IDX_21E210B28C9F781C ON purchase_order (expected_delivery_at)');
+        $this->addSql('CREATE TABLE supplier (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, brand_name VARCHAR(120) NOT NULL, legal_name VARCHAR(160) DEFAULT NULL, tax_id VARCHAR(20) DEFAULT NULL, address CLOB DEFAULT NULL, phone VARCHAR(30) DEFAULT NULL, email VARCHAR(180) DEFAULT NULL, website VARCHAR(180) DEFAULT NULL, notes CLOB DEFAULT NULL, status VARCHAR(255) NOT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, primary_contact_id INTEGER DEFAULT NULL, created_by_id INTEGER DEFAULT NULL, updated_by_id INTEGER DEFAULT NULL, CONSTRAINT FK_9B2A6C7ED905C92C FOREIGN KEY (primary_contact_id) REFERENCES contact (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_9B2A6C7EB03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_9B2A6C7E896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) ON DELETE SET NULL NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_9B2A6C7ED905C92C ON supplier (primary_contact_id)');
+        $this->addSql('CREATE INDEX IDX_9B2A6C7EB03A8386 ON supplier (created_by_id)');
+        $this->addSql('CREATE INDEX IDX_9B2A6C7E896DBBDE ON supplier (updated_by_id)');
+        $this->addSql('CREATE INDEX IDX_9B2A6C7E794474B9 ON supplier (brand_name)');
+        $this->addSql('CREATE INDEX IDX_9B2A6C7E7B00651C ON supplier (status)');
+        $this->addSql('CREATE TABLE supplier_category (supplier_id INTEGER NOT NULL, category_id INTEGER NOT NULL, PRIMARY KEY (supplier_id, category_id), CONSTRAINT FK_8BC571402ADD6D8C FOREIGN KEY (supplier_id) REFERENCES supplier (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE, CONSTRAINT FK_8BC5714012469DE2 FOREIGN KEY (category_id) REFERENCES category (id) ON DELETE CASCADE NOT DEFERRABLE INITIALLY IMMEDIATE)');
+        $this->addSql('CREATE INDEX IDX_8BC571402ADD6D8C ON supplier_category (supplier_id)');
+        $this->addSql('CREATE INDEX IDX_8BC5714012469DE2 ON supplier_category (category_id)');
+        $this->addSql('CREATE TABLE "user" (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, email VARCHAR(180) NOT NULL, roles CLOB NOT NULL, password VARCHAR(255) NOT NULL, full_name VARCHAR(120) NOT NULL, is_active BOOLEAN NOT NULL)');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)');
+    }
+
+    public function down(Schema $schema): void
+    {
+        // this down() migration is auto-generated, please modify it to your needs
+        $this->addSql('DROP TABLE appointment');
+        $this->addSql('DROP TABLE category');
+        $this->addSql('DROP TABLE communication');
+        $this->addSql('DROP TABLE contact');
+        $this->addSql('DROP TABLE document');
+        $this->addSql('DROP TABLE fair');
+        $this->addSql('DROP TABLE fair_participation');
+        $this->addSql('DROP TABLE invoice');
+        $this->addSql('DROP TABLE payment');
+        $this->addSql('DROP TABLE purchase_order');
+        $this->addSql('DROP TABLE supplier');
+        $this->addSql('DROP TABLE supplier_category');
+        $this->addSql('DROP TABLE "user"');
+    }
+}

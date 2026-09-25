@@ -1,0 +1,6 @@
+{# Pestaña "Documentos" de la ficha. Recibe `supplier`. #}
+{{ include('_partials/_documents_section.html.twig', {
+    owner_type: 'supplier',
+    owner_id: supplier.id,
+    documents: supplier.documents,
+}) }}

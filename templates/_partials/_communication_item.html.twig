@@ -1,0 +1,27 @@
+{# Item de comunicación. Recibe `communication` y opcional `show_supplier` (bool). #}
+<div style="display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)">
+    <div style="font-size:20px;line-height:1.2">{{ communication.type.icon }}</div>
+    <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:baseline;gap:8px;flex-wrap:wrap">
+            <strong>{{ communication.subject }}</strong>
+            {% if communication.important %}<span class="badge badge--warn">Importante</span>{% endif %}
+            {% if communication.pendingReply %}<span class="badge badge--danger">Pendiente de respuesta</span>{% endif %}
+        </div>
+        <div class="text-muted" style="font-size:13px;margin-top:2px">
+            {{ communication.type.label }}
+            {% if communication.occurredAt %} · {{ communication.occurredAt|date('d/m/Y H:i') }}{% endif %}
+            {% if communication.contact %} · {{ communication.contact.fullName }}{% endif %}
+            {% if show_supplier|default(false) %} · <a href="{{ path('supplier_show', {id: communication.supplier.id}) }}">{{ communication.supplier.brandName }}</a>{% endif %}
+        </div>
+        {% if communication.body %}<p style="margin:6px 0 0;white-space:pre-line">{{ communication.body }}</p>{% endif %}
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;white-space:nowrap">
+        <a href="{{ path('communication_edit', {id: communication.id}) }}" style="font-size:13px">Editar</a>
+        {% if communication.pendingReply %}
+            <form method="post" action="{{ path('communication_resolve', {id: communication.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('resolve' ~ communication.id) }}">
+                <button type="submit" style="background:none;border:none;color:var(--ok);cursor:pointer;font-size:13px;padding:0">Marcar respondida</button>
+            </form>
+        {% endif %}
+    </div>
+</div>

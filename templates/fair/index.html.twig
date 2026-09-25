@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ferias · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Ferias y eventos</h1>
+        <div class="page-head__actions">
+            <a class="btn btn--primary" href="{{ path('fair_new') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nueva feria
+            </a>
+        </div>
+    </div>
+
+    <form method="get" action="{{ path('fair_index') }}" data-controller="autosubmit" class="filter-bar">
+        <select name="status" data-action="autosubmit#submit" class="filter-select">
+            <option value="">Todos los estados</option>
+            {% for case in enum('App\\Enum\\FairStatus').cases() %}
+                <option value="{{ case.value }}" {{ status == case ? 'selected' }}>{{ case.label() }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <div class="card">
+        {% if total == 0 %}
+            <div class="empty-hint">No hay ferias que coincidan.</div>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr><th>Feria</th><th>Ciudad</th><th>Fechas</th><th>Estado</th><th>Proveedores</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for fair in fairs %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('fair_show', {id: fair.id}) }}"><strong>{{ fair.name }}</strong></a>
+                                {% if fair.edition %}<div class="text-muted" style="font-size:12px">{{ fair.edition }}</div>{% endif %}
+                            </td>
+                            <td class="text-muted">{{ fair.city ?: '—' }}</td>
+                            <td class="text-muted">
+                                {{ fair.startsAt ? fair.startsAt|date('d/m/Y') : '—' }}{% if fair.endsAt %} – {{ fair.endsAt|date('d/m/Y') }}{% endif %}
+                            </td>
+                            <td><span class="badge badge--{{ fair.status.badge }}">{{ fair.status.label }}</span></td>
+                            <td class="text-muted">{{ fair.participations|length }}</td>
+                            <td style="text-align:right"><a class="btn btn--ghost" href="{{ path('fair_show', {id: fair.id}) }}">Ver</a></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    {% if pages > 1 %}
+        <div style="display:flex;gap:6px;justify-content:center;margin-top:18px">
+            {% for p in 1..pages %}
+                {% set params = {page: p} %}
+                {% if status %}{% set params = params|merge({status: status.value}) %}{% endif %}
+                <a class="btn {{ p == page ? 'btn--primary' : 'btn--ghost' }}" href="{{ path('fair_index', params) }}">{{ p }}</a>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

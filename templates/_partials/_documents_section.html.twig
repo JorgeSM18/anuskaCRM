@@ -1,0 +1,48 @@
+{# Sección de documentos. Params: owner_type ('supplier'|'order'|'invoice'), owner_id, documents (iterable). #}
+<div class="card">
+    <div class="card__body">
+        <div style="display:flex;align-items:center;margin-bottom:14px;gap:12px;flex-wrap:wrap">
+            <h3 style="margin:0">Documentos</h3>
+            <form method="post" action="{{ path('document_upload') }}" enctype="multipart/form-data" class="doc-upload">
+                <input type="hidden" name="ownerType" value="{{ owner_type }}">
+                <input type="hidden" name="ownerId" value="{{ owner_id }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('upload' ~ owner_type ~ owner_id) }}">
+                <input type="text" name="title" placeholder="Título (opcional)">
+                <input type="file" name="file" required style="font-size:13px">
+                <button class="btn btn--primary" type="submit">Subir</button>
+            </form>
+        </div>
+
+        {% if documents is empty %}
+            <p class="text-muted" style="margin:0">Sin documentos todavía.</p>
+        {% else %}
+            <table class="table">
+                <thead>
+                    <tr><th>Archivo</th><th>Subido por</th><th>Fecha</th><th style="text-align:right">Tamaño</th><th></th></tr>
+                </thead>
+                <tbody>
+                    {% for document in documents %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('document_download', {id: document.id}) }}" target="_blank" rel="noopener">
+                                    {{ document.title ?: document.originalName }}
+                                </a>
+                                {% if document.title %}<div class="text-muted" style="font-size:12px">{{ document.originalName }}</div>{% endif %}
+                            </td>
+                            <td class="text-muted">{{ document.uploadedBy ? document.uploadedBy.fullName : '—' }}</td>
+                            <td class="text-muted">{{ document.createdAt|date('d/m/Y H:i') }}</td>
+                            <td style="text-align:right" class="text-muted">{{ (document.sizeBytes / 1024)|round }} KB</td>
+                            <td style="text-align:right">
+                                <form method="post" action="{{ path('document_delete', {id: document.id}) }}" style="display:inline"
+                                      data-controller="confirm" data-confirm-message-value="¿Eliminar este documento?">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('doc_delete' ~ document.id) }}">
+                                    <button class="btn btn--danger" type="submit">Borrar</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+</div>

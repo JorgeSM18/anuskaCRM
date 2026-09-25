@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Usuarios · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>Usuarios</h1>
+        <div class="page-head__actions">
+            <a class="btn btn--primary" href="{{ path('admin_user_new') }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Nuevo usuario
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th style="text-align:right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                    <tr>
+                        <td><strong>{{ user.fullName }}</strong>{% if user == app.user %} <span class="text-muted">(tú)</span>{% endif %}</td>
+                        <td class="text-muted">{{ user.email }}</td>
+                        <td>
+                            {% if user.admin %}
+                                <span class="badge badge--info">Administrador</span>
+                            {% else %}
+                                <span class="badge badge--muted">Usuario</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.active %}
+                                <span class="badge badge--ok">Activo</span>
+                            {% else %}
+                                <span class="badge badge--danger">Desactivado</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:right;white-space:nowrap">
+                            <a class="btn btn--ghost" href="{{ path('admin_user_edit', {id: user.id}) }}">Editar</a>
+                            {% if user != app.user %}
+                                <form method="post" action="{{ path('admin_user_toggle', {id: user.id}) }}" style="display:inline"
+                                      data-controller="confirm"
+                                      data-confirm-message-value="{{ user.active ? '¿Desactivar a ' ~ user.fullName ~ '?' : '¿Activar a ' ~ user.fullName ~ '?' }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ user.id) }}">
+                                    <button class="btn {{ user.active ? 'btn--danger' : 'btn--ghost' }}" type="submit">
+                                        {{ user.active ? 'Desactivar' : 'Activar' }}
+                                    </button>
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

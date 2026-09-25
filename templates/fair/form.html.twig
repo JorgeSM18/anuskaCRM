@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ is_new ? 'Nueva feria' : 'Editar feria' }} · Anuska Complementos{% endblock %}
+
+{% block body %}
+    <div class="page-head">
+        <h1>{{ is_new ? 'Nueva feria' : 'Editar feria' }}</h1>
+    </div>
+
+    <div class="card" style="max-width:640px">
+        <div class="card__body">
+            {{ form_start(form) }}
+                <div class="form-row">{{ form_label(form.name) }}{{ form_widget(form.name) }}{{ form_errors(form.name) }}</div>
+                <div class="form-grid">
+                    <div class="form-row">{{ form_label(form.status) }}{{ form_widget(form.status) }}{{ form_errors(form.status) }}</div>
+                    <div class="form-row">{{ form_label(form.edition) }}{{ form_widget(form.edition) }}{{ form_errors(form.edition) }}</div>
+                    <div class="form-row">{{ form_label(form.city) }}{{ form_widget(form.city) }}{{ form_errors(form.city) }}</div>
+                    <div class="form-row">{{ form_label(form.location) }}{{ form_widget(form.location) }}{{ form_errors(form.location) }}</div>
+                    <div class="form-row">{{ form_label(form.startsAt) }}{{ form_widget(form.startsAt) }}{{ form_errors(form.startsAt) }}</div>
+                    <div class="form-row">{{ form_label(form.endsAt) }}{{ form_widget(form.endsAt) }}{{ form_errors(form.endsAt) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.website) }}{{ form_widget(form.website) }}{{ form_errors(form.website) }}</div>
+                    <div class="form-row form-row--full">{{ form_label(form.notes) }}{{ form_widget(form.notes) }}{{ form_errors(form.notes) }}</div>
+                </div>
+
+                <div style="display:flex;gap:10px;margin-top:14px">
+                    <button class="btn btn--primary" type="submit">Guardar</button>
+                    <a class="btn btn--ghost" href="{{ is_new ? path('fair_index') : path('fair_show', {id: fair.id}) }}">Cancelar</a>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
